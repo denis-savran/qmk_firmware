@@ -1,11 +1,18 @@
 #pragma once
 
 #define ORYX_CONFIGURATOR
-#define MOONLANDER_USER_LEDS  // Disable dot indicators.
+#define MOONLANDER_USER_LEDS
 
 // https://docs.qmk.fm/#/config_options
 #undef USB_SUSPEND_WAKEUP_DELAY
 #define USB_SUSPEND_WAKEUP_DELAY 0
+
+// https://docs.qmk.fm/#/feature_layers
+#define TAPPING_TOGGLE 1
+
+// https://docs.qmk.fm/#/one_shot_keys
+#define ONESHOT_TAP_TOGGLE 2
+#define ONESHOT_TIMEOUT 1000
 
 // https://docs.qmk.fm/#/tap_hold
 #undef TAPPING_TERM
@@ -44,4 +51,3 @@
 
 #undef RGB_MATRIX_STARTUP_SPD
 #define RGB_MATRIX_STARTUP_SPD 50
-
