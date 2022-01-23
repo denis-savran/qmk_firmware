@@ -15,6 +15,18 @@ enum layers {
     SYMBOLS,
 };
 
+// See `g_led_config` in `keyboards/moonlander/moonlander.c`.
+enum rgb_matrix_keycode_indexes {
+    RGB_LEFT_LSFT = 3,
+    RGB_LEFT_LALT = 14,
+    RGB_LEFT_LGUI = 19,
+    RGB_LEFT_LCTL = 24,
+    RGB_RIGHT_LSFT = 39,
+    RGB_RIGHT_LALT = 50,
+    RGB_RIGHT_LGUI = 55,
+    RGB_RIGHT_LCTL = 60,
+};
+
 enum custom_keycodes {
     RGB_SLD = ML_SAFE_RANGE,
 };
@@ -54,11 +66,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
-    [MEDIA] = {{152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}, {152,255,255}},
-    [MOUSE] = {{74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}, {74,255,255}},
-    [SYMBOLS] = {{0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}, {0,245,245}},
-};
+
+// https://docs.qmk.fm/#/feature_advanced_keycodes?id=checking-modifier-state
+void rgb_matrix_oneshot_mods(void) {
+    if (get_oneshot_mods() & MOD_BIT(KC_LSFT) || get_oneshot_locked_mods() & MOD_BIT(KC_LSFT)) {
+        rgb_matrix_set_color(RGB_LEFT_LSFT, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_LSFT, RGB_WHITE);
+    }
+
+    if (get_oneshot_mods() & MOD_BIT(KC_LALT) || get_oneshot_locked_mods() & MOD_BIT(KC_LALT)) {
+        rgb_matrix_set_color(RGB_LEFT_LALT, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_LALT, RGB_WHITE);
+    }
+
+    if (get_oneshot_mods() & MOD_BIT(KC_LGUI) || get_oneshot_locked_mods() & MOD_BIT(KC_LGUI)) {
+        rgb_matrix_set_color(RGB_LEFT_LGUI, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_LGUI, RGB_WHITE);
+    }
+
+    if (get_oneshot_mods() & MOD_BIT(KC_LCTL) || get_oneshot_locked_mods() & MOD_BIT(KC_LCTL)) {
+        rgb_matrix_set_color(RGB_LEFT_LCTL, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_LCTL, RGB_WHITE);
+    }
+}
 
 
 void keyboard_post_init_user(void) {
@@ -66,25 +96,7 @@ void keyboard_post_init_user(void) {
 }
 
 
-void set_layer_color(int layer) {
-    for (int i = 0; i < DRIVER_LED_TOTAL; i++) {
-        HSV hsv = {
-            .h = pgm_read_byte(&ledmap[layer][i][0]),
-            .s = pgm_read_byte(&ledmap[layer][i][1]),
-            .v = pgm_read_byte(&ledmap[layer][i][2]),
-        };
-
-        if (!hsv.h && !hsv.s && !hsv.v) {
-            rgb_matrix_set_color(i, 0, 0, 0);
-        } else {
-            RGB rgb = hsv_to_rgb(hsv);
-            float f = (float)rgb_matrix_config.hsv.v / UINT8_MAX;
-            rgb_matrix_set_color(i, f * rgb.r, f * rgb.g, f * rgb.b);
-        }
-    }
-}
-
-
+// https://docs.qmk.fm/#/feature_rgb_matrix
 void rgb_matrix_indicators_user(void) {
     if (keyboard_config.disable_layer_led) {
         return;
@@ -94,13 +106,22 @@ void rgb_matrix_indicators_user(void) {
 
     switch (layer) {
     case MEDIA:
+        rgb_matrix_set_color_all(RGB_RED);
+        rgb_matrix_oneshot_mods();
+        break;
     case MOUSE:
+        rgb_matrix_set_color_all(RGB_GREEN);
+        rgb_matrix_oneshot_mods();
+        break;
     case SYMBOLS:
-        set_layer_color(layer);
+        rgb_matrix_set_color_all(RGB_BLUE);
+        rgb_matrix_oneshot_mods();
         break;
     default:
         if (rgb_matrix_get_flags() == LED_FLAG_NONE) {
-            rgb_matrix_set_color_all(0, 0, 0);
+            rgb_matrix_set_color_all(RGB_BLACK);
+        } else {
+            rgb_matrix_oneshot_mods();
         }
         break;
     }
