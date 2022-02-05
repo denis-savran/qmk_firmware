@@ -1,92 +1,208 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 
-#define KC_PC_UNDO LCTL(KC_Z)
-#define KC_PC_CUT LCTL(KC_X)
-#define KC_PC_COPY LCTL(KC_C)
-#define KC_PC_PASTE LCTL(KC_V)
+#define XXXX KC_NO  // Key is not present.
+#define U_NA KC_NO  // Present but not available for use.
+#define U_NU KC_NO  // Available but not used.
+
+// Layers.
+#define T_BASE TO(BASE)
+#define T_MOU TO(MOU)
+#define T_RMOU TO(RMOU)
+#define BUT_Z LT(BUT, KC_Z)
+#define BUT_SLSH LT(BUT, KC_SLSH)
+
+// Left-hand thumb cluster.
+#define SYM_TAB LT(SYM, KC_TAB)
+#define NUM_SPC LT(NUM, KC_SPC)
+#define FUN_ESC LT(FUN, KC_ESC)
+
+// Right-hand thumb cluster.
+#define MED_DEL LT(MED, KC_DEL)
+#define NAV_BSPC LT(NAV, KC_BSPC)
+#define MOU_ENT LT(MOU, KC_ENT)
+
+// History and clipboard.
+#define U_RDO C(KC_Y)
+#define U_PST C(KC_V)
+#define U_CPY C(KC_C)
+#define U_CUT C(KC_X)
+#define U_UND C(KC_Z)
 
 extern rgb_config_t rgb_matrix_config;
 
-enum layers {
-    DEFAULT,
-    MEDIA,
-    MOUSE,
-    SYMBOLS,
-};
+enum layers { BASE, SYM, NUM, FUN, MED, NAV, MOU, RMOU, BUT };
 
 // See `g_led_config` in `keyboards/moonlander/moonlander.c`.
 enum rgb_matrix_keycode_indexes {
-    RGB_LEFT_LSFT = 3,
-    RGB_LEFT_LALT = 14,
-    RGB_LEFT_LGUI = 19,
-    RGB_LEFT_LCTL = 24,
-    RGB_RIGHT_LSFT = 39,
-    RGB_RIGHT_LALT = 50,
-    RGB_RIGHT_LGUI = 55,
-    RGB_RIGHT_LCTL = 60,
+    RGB_LEFT_CAPS = 29,
+
+    RGB_LEFT_LGUI = 7,
+    RGB_LEFT_LALT = 12,
+    RGB_LEFT_LCTL = 17,
+    RGB_LEFT_LSFT = 22,
+
+    RGB_LEFT_BUT = 8,
+    RGB_LEFT_ALGR = 13,
+
+    RGB_LEFT_T_RMOU = 35,
+
+    RGB_LEFT_FUN = 34,
+    RGB_LEFT_NUM = 33,
+    RGB_LEFT_SYM = 32,
+
+    RGB_RIGHT_LSFT = 58,
+    RGB_RIGHT_LCTL = 53,
+    RGB_RIGHT_LALT = 48,
+    RGB_RIGHT_LGUI = 43,
+
+    RGB_RIGHT_ALGR = 49,
+    RGB_RIGHT_BUT = 44,
+
+    RGB_RIGHT_T_MOU = 71,
+
+    RGB_RIGHT_MED = 70,
+    RGB_RIGHT_NAV = 69,
+    RGB_RIGHT_MOU = 68,
 };
 
-enum custom_keycodes {
-    RGB_SLD = ML_SAFE_RANGE,
-};
-
+// https://github.com/manna-harbour/qmk_firmware/blob/miryoku/users/manna-harbour_miryoku/miryoku.org
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [DEFAULT]        =                    LAYOUT_moonlander(
-    KC_GRAVE,      KC_1,                KC_2,                KC_3,            KC_4,                KC_5,        KC_DELETE, KC_PSCREEN,         KC_6,            KC_7,                KC_8,          KC_9,                KC_0,                KC_RBRACKET,
-    KC_TAB,        KC_Q,                KC_W,                KC_E,            KC_R,                KC_T,        KC_LEFT,   KC_UP,              KC_Y,            KC_U,                KC_I,          KC_O,                KC_P,                KC_LBRACKET,
-    KC_BSPACE,     KC_A,                KC_S,                KC_D,            KC_F,                KC_G,        KC_RIGHT,  KC_DOWN,            KC_H,            KC_J,                KC_K,          KC_L,                KC_SCOLON,           KC_QUOTE,
-    OSM(MOD_LSFT), KC_Z,                KC_X,                KC_C,            KC_V,                KC_B,        KC_N,      KC_M,               KC_COMMA,        KC_DOT,              KC_SLASH,      OSM(MOD_LSFT),
-    KC_PAUSE,      KC_HOME,             OSM(MOD_LALT),       OSM(MOD_LGUI),   OSM(MOD_LCTL),       TT(MEDIA),   TT(MOUSE), OSM(MOD_LCTL),      OSM(MOD_LGUI),   OSM(MOD_LALT),       KC_END,        KC_SCROLLLOCK,
-    KC_SPACE,      KC_ESCAPE,           OSL(SYMBOLS),        OSL(SYMBOLS),    KC_ENTER,            KC_SPACE
-  ),
-  [MEDIA]          =                    LAYOUT_moonlander(
-    XXXXXXX,       XXXXXXX,             XXXXXXX,             XXXXXXX,         XXXXXXX,             XXXXXXX,     MU_TOG,    AU_TOG,             XXXXXXX,         XXXXXXX,             XXXXXXX,       XXXXXXX,             XXXXXXX,             XXXXXXX,
-    _______,       XXXXXXX,             KC_MEDIA_PREV_TRACK, KC_UP,           KC_MEDIA_NEXT_TRACK, XXXXXXX,     RGB_SLD,   RGB_TOG,            XXXXXXX,         KC_MEDIA_NEXT_TRACK, KC_UP,         KC_MEDIA_PREV_TRACK, XXXXXXX,             XXXXXXX,
-    _______,       KC_MEDIA_PLAY_PAUSE, KC_LEFT,             KC_DOWN,         KC_RIGHT,            XXXXXXX,     RGB_MOD,   TOGGLE_LAYER_COLOR, XXXXXXX,         KC_LEFT,             KC_DOWN,       KC_RIGHT,            KC_MEDIA_PLAY_PAUSE, XXXXXXX,
-    _______,       KC_MEDIA_STOP,       KC_AUDIO_MUTE,       KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN,   XXXXXXX,     XXXXXXX,   KC_AUDIO_VOL_DOWN,  KC_AUDIO_VOL_UP, KC_AUDIO_MUTE,       KC_MEDIA_STOP, _______,
-    _______,       _______,             _______,             _______,         _______,             _______,     XXXXXXX,   _______,            _______,         _______,             _______,       _______,
-    _______,       _______,             XXXXXXX,             XXXXXXX,         _______,             _______
-  ),
-  [MOUSE]          =                    LAYOUT_moonlander(
-    XXXXXXX,       XXXXXXX,             XXXXXXX,             XXXXXXX,         XXXXXXX,             XXXXXXX,     _______,   _______,            XXXXXXX,         XXXXXXX,             XXXXXXX,       XXXXXXX,             XXXXXXX,             XXXXXXX,
-    _______,       XXXXXXX,             KC_MS_BTN2,          KC_MS_UP,        KC_MS_BTN1,          KC_PC_PASTE, _______,   _______,            KC_PC_PASTE,     KC_MS_BTN1,          KC_MS_UP,      KC_MS_BTN2,          XXXXXXX,             XXXXXXX,
-    _______,       KC_MS_BTN3,          KC_MS_LEFT,          KC_MS_DOWN,      KC_MS_RIGHT,         KC_PC_COPY,  _______,   _______,            KC_PC_COPY,      KC_MS_LEFT,          KC_MS_DOWN,    KC_MS_RIGHT,         KC_MS_BTN3,          XXXXXXX,
-    _______,       KC_MS_WH_LEFT,       KC_MS_WH_RIGHT,      KC_MS_WH_UP,     KC_MS_WH_DOWN,       KC_PC_CUT,   KC_PC_CUT, KC_MS_WH_DOWN,      KC_MS_WH_UP,     KC_MS_WH_RIGHT,      KC_MS_WH_LEFT, _______,
-    _______,       _______,             _______,             _______,         _______,             XXXXXXX,     _______,   _______,            _______,         _______,             _______,       _______,
-    _______,       _______,             XXXXXXX,             XXXXXXX,         _______,             _______
-  ),
-  [SYMBOLS]        =                    LAYOUT_moonlander(
-    XXXXXXX,       KC_F1,               KC_F2,               KC_F3,           KC_F4,               KC_F5,       KC_F11,    KC_F12,             KC_F6,           KC_F7,               KC_F8,         KC_F9,               KC_F10,              XXXXXXX,
-    XXXXXXX,       KC_PLUS,             KC_ASTR,             KC_LCBR,         KC_RCBR,             KC_AT,       KC_HOME,   KC_PGUP,            KC_AMPR,         KC_7,                KC_8,          KC_9,                KC_CIRC,             XXXXXXX,
-    KC_GRAVE,      KC_UNDS,             KC_MINUS,            KC_LPRN,         KC_RPRN,             KC_PERC,     KC_END,    KC_PGDOWN,          KC_EXLM,         KC_4,                KC_5,          KC_6,                KC_0,                KC_BSLASH,
-    _______,       KC_HASH,             KC_EQUAL,            KC_LBRACKET,     KC_RBRACKET,         KC_TILD,     KC_PIPE,   KC_1,               KC_2,            KC_3,                KC_DLR,        _______,
-    _______,       _______,             _______,             _______,         _______,             XXXXXXX,     XXXXXXX,   _______,            _______,         _______,             _______,       WEBUSB_PAIR,
-    _______,       _______,             _______,             _______,         _______,             _______
-  ),
+    [BASE] = LAYOUT_blaxpy(
+        U_NU,    U_NU,         U_NU,         U_NU,         U_NU,         U_NU,    U_NU,    U_NU,    U_NU,     U_NU,         U_NU,         U_NU,           U_NU,            U_NU,
+        U_NU,    U_NA,         KC_W,         KC_E,         KC_R,         KC_T,    U_NU,    U_NU,    KC_Y,     KC_U,         KC_I,         KC_O,           U_NA,            U_NU,
+        KC_Q,    LGUI_T(KC_A), LALT_T(KC_S), LCTL_T(KC_D), LSFT_T(KC_F), KC_G,    U_NU,    U_NU,    KC_H,     LSFT_T(KC_J), LCTL_T(KC_K), LALT_T(KC_L),   LGUI_T(KC_SCLN), KC_P,
+        U_NU,    BUT_Z,        ALGR_T(KC_X), KC_C,         KC_V,         KC_B,    XXXX,    XXXX,    KC_N,     KC_M,         KC_COMM,      ALGR_T(KC_DOT), BUT_SLSH,        U_NU,
+        KC_PAUS, KC_LEFT,      KC_RIGHT,     U_NU,         U_NU,         XXXX,    T_RMOU,  T_MOU,   XXXX,     U_NU,         U_NU,         KC_MPRV,        KC_MNXT,         KC_MPLY,
+        XXXX,    XXXX,         XXXX,         XXXX,         SYM_TAB,      NUM_SPC, FUN_ESC, MED_DEL, NAV_BSPC, MOU_ENT,      XXXX,         XXXX,           XXXX,            XXXX
+    ),
+    [SYM] = LAYOUT_blaxpy(
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU, U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU, U_NA,    U_NA,    U_NA,    U_NA,    U_NA, U_NU, U_NU,    KC_LCBR, KC_AMPR, KC_ASTR, KC_LPRN, U_NA,    U_NU,
+        U_NA, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA, U_NU, U_NA,    KC_PLUS, KC_DLR,  KC_PERC, KC_CIRC, KC_DQUO, KC_RCBR,
+        U_NU, U_NA,    KC_ALGR, U_NA,    U_NA,    U_NA, XXXX, XXXX,    KC_PIPE, KC_EXLM, KC_AT,   KC_HASH, KC_TILD, U_NU,
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    XXXX, U_NA, U_NA,    XXXX,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        XXXX, XXXX,    XXXX,    XXXX,    U_NA,    U_NA, U_NA, KC_LPRN, KC_RPRN, KC_UNDS, XXXX,    XXXX,    XXXX,    XXXX
+    ),
+    [NUM] = LAYOUT_blaxpy(
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU, U_NU, U_NU,   U_NU,    U_NU,    U_NU, U_NU, U_NU,    U_NU,
+        U_NU, U_NA,    U_NA,    U_NA,    U_NA,    U_NA, U_NU, U_NU,   KC_LBRC, KC_7,    KC_8, KC_9, U_NA,    U_NU,
+        U_NA, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA, U_NU, U_NU,   KC_EQL,  KC_4,    KC_5, KC_6, KC_QUOT, KC_RBRC,
+        U_NU, U_NA,    KC_ALGR, U_NA,    U_NA,    U_NA, XXXX, XXXX,   KC_BSLS, KC_1,    KC_2, KC_3, KC_GRV,  U_NU,
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    XXXX, U_NA, U_NA,   XXXX,    U_NU,    U_NU, U_NU, U_NU,    U_NU,
+        XXXX, XXXX,    XXXX,    XXXX,    U_NA,    U_NA, U_NA, KC_DOT, KC_0,    KC_MINS, XXXX, XXXX, XXXX,    XXXX
+    ),
+    [FUN] = LAYOUT_blaxpy(
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU, U_NU, U_NU,   U_NU,    U_NU,   U_NU,  U_NU,  U_NU,   U_NU,
+        U_NU, U_NA,    U_NA,    U_NA,    U_NA,    U_NA, U_NU, U_NU,   KC_PSCR, KC_F7,  KC_F8, KC_F9, U_NA,   U_NU,
+        U_NA, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA, U_NU, U_NU,   KC_SLCK, KC_F4,  KC_F5, KC_F6, KC_F11, KC_F12,
+        U_NU, U_NA,    KC_ALGR, U_NA,    U_NA,    U_NA, XXXX, XXXX,   KC_PAUS, KC_F1,  KC_F2, KC_F3, KC_F10, U_NU,
+        U_NU, U_NU,    U_NU,    U_NU,    U_NU,    XXXX, U_NA, U_NA,   XXXX,    U_NU,   U_NU,  U_NU,  U_NU,   U_NU,
+        XXXX, XXXX,    XXXX,    XXXX,    U_NA,    U_NA, U_NA, KC_DEL, KC_BSPC, KC_ENT, XXXX,  XXXX,  XXXX,   XXXX
+    ),
+    [MED] = LAYOUT_blaxpy(
+        U_NU, U_NU,    U_NU,     U_NU,    U_NU,    U_NU,    U_NU,    U_NU, U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU, U_NA,    RGB_RMOD, KC_VOLU, RGB_MOD, RGB_VAI, U_NU,    U_NU, U_NA, U_NA,    U_NA,    U_NA,    U_NA,    U_NU,
+        U_NU, U_NU,    KC_MPRV,  KC_VOLD, KC_MNXT, RGB_VAD, U_NU,    U_NU, U_NA, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, U_NA,
+        U_NU, RGB_TOG, U_NU,     U_NU,    U_NU,    U_NU,    XXXX,    XXXX, U_NA, U_NA,    U_NA,    KC_ALGR, U_NA,    U_NU,
+        U_NU, U_NU,    U_NU,     U_NU,    U_NU,    XXXX,    U_NA,    U_NA, XXXX, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        XXXX, XXXX,    XXXX,     XXXX,    KC_MUTE, KC_MPLY, KC_MSTP, U_NA, U_NA, U_NA,    XXXX,    XXXX,    XXXX,    XXXX
+    ),                                                               
+    [NAV] = LAYOUT_blaxpy(
+        U_NU,   U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,   U_NU, U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU,   U_NA,    KC_HOME, KC_UP,   KC_END,  KC_PGUP, U_NU,   U_NU, U_NA, U_NA,    U_NA,    U_NA,    U_NA,    U_NU,
+        KC_INS, KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN, U_NU,   U_NU, U_NA, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, U_NA,
+        U_NU,   U_UND,   U_CUT,   U_CPY,   U_PST,   U_RDO,   XXXX,   XXXX, U_NA, U_NA,    U_NA,    KC_ALGR, U_NA,    U_NU,
+        U_NU,   U_NU,    U_NU,    U_NU,    U_NU,    XXXX,    U_NA,   U_NA, XXXX, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        XXXX,   XXXX,    XXXX,    XXXX,    KC_TAB,  KC_SPC,  KC_ESC, U_NA, U_NA, U_NA,    XXXX,    XXXX,    XXXX,    XXXX
+    ),
+    [MOU] = LAYOUT_blaxpy(
+        U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,   U_NU, U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU,    U_NA,    KC_WH_L, KC_MS_U, KC_WH_R, KC_WH_U, U_NU,    U_NU,   U_NA, U_NA,    U_NA,    U_NA,    U_NA,    U_NU,
+        U_NU,    U_NU,    KC_MS_L, KC_MS_D, KC_MS_R, KC_WH_D, U_NU,    U_NU,   U_NA, KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, U_NA,
+        U_NU,    U_UND,   U_CUT,   U_CPY,   U_PST,   U_RDO,   XXXX,    XXXX,   U_NA, U_NA,    U_NA,    KC_ALGR, U_NA,    U_NU,
+        KC_TRNS, KC_TRNS, KC_TRNS, U_NU,    U_NU,    XXXX,    T_BASE,  T_BASE, XXXX, U_NU,    U_NU,    KC_TRNS, KC_TRNS, KC_TRNS,
+        XXXX,    XXXX,    XXXX,    XXXX,    KC_BTN2, KC_BTN1, KC_BTN3, U_NA,   U_NA, U_NA,    XXXX,    XXXX,    XXXX,    XXXX
+    ),
+    [RMOU] = LAYOUT_blaxpy(
+        U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU, U_NU,   U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU,    U_NA,    U_NA,    U_NA,    U_NA,    U_NA, U_NU,   U_NU,    KC_WH_U, KC_WH_L, KC_MS_U, KC_WH_R, U_NA,    U_NU,
+        U_NA,    KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA, U_NU,   U_NU,    KC_WH_D, KC_MS_L, KC_MS_D, KC_MS_R, U_NU,    U_NU,
+        U_NU,    U_NA,    KC_ALGR, U_NA,    U_NA,    U_NA, XXXX,   XXXX,    U_RDO,   U_PST,   U_CPY,   U_CUT,   U_UND,   U_NU,
+        KC_TRNS, KC_TRNS, KC_TRNS, U_NU,    U_NU,    XXXX, T_BASE, T_BASE,  XXXX,    U_NU,    U_NU,    KC_TRNS, KC_TRNS, KC_TRNS,
+        XXXX,    XXXX,    XXXX,    XXXX,    U_NA,    U_NA, U_NA,   KC_BTN3, KC_BTN1, KC_BTN2, XXXX,    XXXX,    XXXX,    XXXX
+    ),
+    [BUT] = LAYOUT_blaxpy(
+        U_NU,  U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        U_NU,  U_NA,    U_CUT,   U_CPY,   U_PST,   U_RDO,   U_NU,    U_NU,    U_RDO,   U_PST,   U_CPY,   U_CUT,   U_NA,    U_NU,
+        U_UND, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA,    U_NU,    U_NU,    U_NA,    KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, U_UND,
+        U_NU,  U_UND,   U_CUT,   U_CPY,   U_PST,   U_RDO,   XXXX,    XXXX,    U_RDO,   U_PST,   U_CPY,   U_CUT,   U_UND,   U_NU,
+        U_NU,  U_NU,    U_NU,    U_NU,    U_NU,    XXXX,    U_NA,    U_NA,    XXXX,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
+        XXXX,  XXXX,    XXXX,    XXXX,    KC_BTN2, KC_BTN1, KC_BTN3, KC_BTN3, KC_BTN1, KC_BTN2, XXXX,    XXXX,    XXXX,    XXXX
+    ),
 };
 
 
 // https://docs.qmk.fm/#/feature_advanced_keycodes?id=checking-modifier-state
-void rgb_matrix_oneshot_mods(void) {
-    if (get_oneshot_mods() & MOD_BIT(KC_LSFT) || get_oneshot_locked_mods() & MOD_BIT(KC_LSFT)) {
+void rgb_matrix_layers(void) {
+    int layer = biton32(layer_state);
+
+    switch (layer) {
+    case SYM:
+        rgb_matrix_set_color(RGB_LEFT_SYM, RGB_WHITE);
+        break;
+    case NUM:
+        rgb_matrix_set_color(RGB_LEFT_NUM, RGB_WHITE);
+        break;
+    case FUN:
+        rgb_matrix_set_color(RGB_LEFT_FUN, RGB_WHITE);
+        break;
+    case MED:
+        rgb_matrix_set_color(RGB_RIGHT_MED, RGB_WHITE);
+        break;
+    case NAV:
+        rgb_matrix_set_color(RGB_RIGHT_NAV, RGB_WHITE);
+        break;
+    case MOU:
+        rgb_matrix_set_color(RGB_RIGHT_T_MOU, RGB_RED);
+        rgb_matrix_set_color(RGB_RIGHT_MOU, RGB_WHITE);
+        break;
+    case RMOU:
+        rgb_matrix_set_color(RGB_LEFT_T_RMOU, RGB_RED);
+        break;
+    case BUT:
+        rgb_matrix_set_color(RGB_LEFT_BUT, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_BUT, RGB_WHITE);
+        break;
+    }
+}
+
+
+// https://docs.qmk.fm/#/feature_advanced_keycodes?id=checking-modifier-state
+void rgb_matrix_mods(void) {
+    if (get_mods() & MOD_MASK_SHIFT) {
         rgb_matrix_set_color(RGB_LEFT_LSFT, RGB_WHITE);
         rgb_matrix_set_color(RGB_RIGHT_LSFT, RGB_WHITE);
     }
 
-    if (get_oneshot_mods() & MOD_BIT(KC_LALT) || get_oneshot_locked_mods() & MOD_BIT(KC_LALT)) {
+    if (get_mods() & MOD_MASK_CTRL) {
+        rgb_matrix_set_color(RGB_LEFT_LCTL, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_LCTL, RGB_WHITE);
+    }
+
+    if (get_mods() & MOD_BIT(KC_LALT)) {
         rgb_matrix_set_color(RGB_LEFT_LALT, RGB_WHITE);
         rgb_matrix_set_color(RGB_RIGHT_LALT, RGB_WHITE);
     }
 
-    if (get_oneshot_mods() & MOD_BIT(KC_LGUI) || get_oneshot_locked_mods() & MOD_BIT(KC_LGUI)) {
+    if (get_mods() & MOD_MASK_GUI) {
         rgb_matrix_set_color(RGB_LEFT_LGUI, RGB_WHITE);
         rgb_matrix_set_color(RGB_RIGHT_LGUI, RGB_WHITE);
     }
 
-    if (get_oneshot_mods() & MOD_BIT(KC_LCTL) || get_oneshot_locked_mods() & MOD_BIT(KC_LCTL)) {
-        rgb_matrix_set_color(RGB_LEFT_LCTL, RGB_WHITE);
-        rgb_matrix_set_color(RGB_RIGHT_LCTL, RGB_WHITE);
+    if (get_mods() & MOD_BIT(KC_ALGR)) {
+        rgb_matrix_set_color(RGB_LEFT_ALGR, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_ALGR, RGB_WHITE);
     }
 }
 
@@ -95,6 +211,12 @@ void keyboard_post_init_user(void) {
     rgb_matrix_enable();
 }
 
+static bool caps_lock_state = false;
+
+bool led_update_user(led_t led_state) {
+    caps_lock_state = led_state.caps_lock;
+    return true;
+}
 
 // https://docs.qmk.fm/#/feature_rgb_matrix
 void rgb_matrix_indicators_user(void) {
@@ -102,40 +224,10 @@ void rgb_matrix_indicators_user(void) {
         return;
     }
 
-    int layer = biton32(layer_state);
+    rgb_matrix_layers();
+    rgb_matrix_mods();
 
-    switch (layer) {
-    case MEDIA:
-        rgb_matrix_set_color_all(RGB_RED);
-        rgb_matrix_oneshot_mods();
-        break;
-    case MOUSE:
-        rgb_matrix_set_color_all(RGB_GREEN);
-        rgb_matrix_oneshot_mods();
-        break;
-    case SYMBOLS:
-        rgb_matrix_set_color_all(RGB_BLUE);
-        rgb_matrix_oneshot_mods();
-        break;
-    default:
-        if (rgb_matrix_get_flags() == LED_FLAG_NONE) {
-            rgb_matrix_set_color_all(RGB_BLACK);
-        } else {
-            rgb_matrix_oneshot_mods();
-        }
-        break;
-    }
-}
-
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-    case RGB_SLD:
-        if (record->event.pressed) {
-            rgblight_mode(1);
-        }
-        return false;
-    default:
-        return true;
+    if (caps_lock_state) {
+        rgb_matrix_set_color(RGB_LEFT_CAPS, RGB_WHITE);
     }
 }
