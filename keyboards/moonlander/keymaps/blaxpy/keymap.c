@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
+#include "features/caps_word.h"
 
 #define XXXX KC_NO  // Key is not present.
 #define U_NA KC_NO  // Present but not available for use.
@@ -35,7 +36,8 @@ enum layers { BASE, SYM, NUM, FUN, MED, NAV, MOU, RMOU, BUT };
 
 // See `g_led_config` in `keyboards/moonlander/moonlander.c`.
 enum rgb_matrix_keycode_indexes {
-    RGB_LEFT_CAPS = 29,
+    RGB_LEFT_CAPS = 0,
+    RGB_LEFT_CAPS_WORD = 29,
 
     RGB_LEFT_LGUI = 7,
     RGB_LEFT_LALT = 12,
@@ -51,7 +53,9 @@ enum rgb_matrix_keycode_indexes {
     RGB_LEFT_NUM = 33,
     RGB_LEFT_SYM = 32,
 
-    RGB_RIGHT_LSFT = 58,
+    RGB_RIGHT_CAPS_WORD = 65,
+
+    RGB_RIGHT_RSFT = 58,
     RGB_RIGHT_LCTL = 53,
     RGB_RIGHT_LALT = 48,
     RGB_RIGHT_LGUI = 43,
@@ -71,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_blaxpy(
         U_NU,    U_NU,         U_NU,         U_NU,         U_NU,         U_NU,    U_NU,    U_NU,    U_NU,     U_NU,         U_NU,         U_NU,           U_NU,            U_NU,
         U_NU,    U_NA,         KC_W,         KC_E,         KC_R,         KC_T,    U_NU,    U_NU,    KC_Y,     KC_U,         KC_I,         KC_O,           U_NA,            U_NU,
-        KC_Q,    LGUI_T(KC_A), LALT_T(KC_S), LCTL_T(KC_D), LSFT_T(KC_F), KC_G,    U_NU,    U_NU,    KC_H,     LSFT_T(KC_J), LCTL_T(KC_K), LALT_T(KC_L),   LGUI_T(KC_SCLN), KC_P,
+        KC_Q,    LGUI_T(KC_A), LALT_T(KC_S), LCTL_T(KC_D), LSFT_T(KC_F), KC_G,    U_NU,    U_NU,    KC_H,     RSFT_T(KC_J), LCTL_T(KC_K), LALT_T(KC_L),   LGUI_T(KC_SCLN), KC_P,
         U_NU,    BUT_Z,        ALGR_T(KC_X), KC_C,         KC_V,         KC_B,    XXXX,    XXXX,    KC_N,     KC_M,         KC_COMM,      ALGR_T(KC_DOT), BUT_SLSH,        U_NU,
         KC_PAUS, KC_LEFT,      KC_RIGHT,     U_NU,         U_NU,         XXXX,    T_RMOU,  T_MOU,   XXXX,     U_NU,         U_NU,         KC_MPRV,        KC_MNXT,         KC_MPLY,
         XXXX,    XXXX,         XXXX,         XXXX,         SYM_TAB,      NUM_SPC, FUN_ESC, MED_DEL, NAV_BSPC, MOU_ENT,      XXXX,         XXXX,           XXXX,            XXXX
@@ -135,7 +139,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BUT] = LAYOUT_blaxpy(
         U_NU,  U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
         U_NU,  U_NA,    U_CUT,   U_CPY,   U_PST,   U_RDO,   U_NU,    U_NU,    U_RDO,   U_PST,   U_CPY,   U_CUT,   U_NA,    U_NU,
-        U_UND, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA,    U_NU,    U_NU,    U_NA,    KC_LSFT, KC_LCTL, KC_LALT, KC_LGUI, U_UND,
+        U_UND, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT, U_NA,    U_NU,    U_NU,    U_NA,    KC_RSFT, KC_LCTL, KC_LALT, KC_LGUI, U_UND,
         U_NU,  U_UND,   U_CUT,   U_CPY,   U_PST,   U_RDO,   XXXX,    XXXX,    U_RDO,   U_PST,   U_CPY,   U_CUT,   U_UND,   U_NU,
         U_NU,  U_NU,    U_NU,    U_NU,    U_NU,    XXXX,    U_NA,    U_NA,    XXXX,    U_NU,    U_NU,    U_NU,    U_NU,    U_NU,
         XXXX,  XXXX,    XXXX,    XXXX,    KC_BTN2, KC_BTN1, KC_BTN3, KC_BTN3, KC_BTN1, KC_BTN2, XXXX,    XXXX,    XXXX,    XXXX
@@ -182,7 +186,7 @@ void rgb_matrix_layers(void) {
 void rgb_matrix_mods(void) {
     if (get_mods() & MOD_MASK_SHIFT) {
         rgb_matrix_set_color(RGB_LEFT_LSFT, RGB_WHITE);
-        rgb_matrix_set_color(RGB_RIGHT_LSFT, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_RSFT, RGB_WHITE);
     }
 
     if (get_mods() & MOD_MASK_CTRL) {
@@ -230,4 +234,21 @@ void rgb_matrix_indicators_user(void) {
     if (caps_lock_state) {
         rgb_matrix_set_color(RGB_LEFT_CAPS, RGB_WHITE);
     }
+
+    if (caps_word_get()) {
+        rgb_matrix_set_color(RGB_LEFT_CAPS_WORD, RGB_WHITE);
+        rgb_matrix_set_color(RGB_RIGHT_CAPS_WORD, RGB_WHITE);
+    }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    if (!process_caps_word(keycode, record)) {
+        return false;
+    }
+
+    return true;
+}
+
+void matrix_scan_user(void) {
+    caps_word_task();
 }

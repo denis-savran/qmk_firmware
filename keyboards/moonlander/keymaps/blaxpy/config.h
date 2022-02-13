@@ -33,6 +33,9 @@
 // Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
 #define TAPPING_FORCE_HOLD
 
+// https://getreuer.info/posts/keyboards/caps-word/index.html
+#define CAPS_WORD_IDLE_TIMEOUT 1000  // Turn off Caps Word after 1 second.
+
 // https://docs.qmk.fm/#/feature_mouse_keys
 #undef MOUSEKEY_DELAY
 #define MOUSEKEY_DELAY 50
