@@ -1,12 +1,10 @@
+// https://docs.qmk.fm/#/config_options?id=the-configh-file
 #pragma once
 
+// https://docs.qmk.fm/#/squeezing_avr
+#define LAYER_STATE_8BIT  // Limit the number of layers that the firmware uses.
+
 #define MOONLANDER_USER_LEDS  // Disable LED layer indication.
-
-#define NO_ACTION_ONESHOT  // Disable one-shot modifiers.
-
-// https://docs.qmk.fm/#/config_options
-#undef USB_SUSPEND_WAKEUP_DELAY
-#define USB_SUSPEND_WAKEUP_DELAY 0
 
 // https://docs.qmk.fm/#/feature_rgb_matrix
 #define RGB_DISABLE_WHEN_USB_SUSPENDED
@@ -14,55 +12,20 @@
 #undef RGB_MATRIX_STARTUP_SPD
 #define RGB_MATRIX_STARTUP_SPD 50
 
-// https://docs.qmk.fm/#/config_options?id=behaviors-that-can-be-configured
-// Recommended for heavy chording.
-#undef QMK_KEYS_PER_SCAN
-#define QMK_KEYS_PER_SCAN 4
-
 // https://docs.qmk.fm/#/tap_hold
 #undef TAPPING_TERM
-#define TAPPING_TERM 150
+#define TAPPING_TERM 200 // How long before a key press becomes a hold.
 
-// If you press a dual-role key, tap another key and then release the dual-role key, all within the tapping term,
-// the dual-role key will perform its hold action.
-#define PERMISSIVE_HOLD
+// https://docs.qmk.fm/#/one_shot_keys
+#undef ONESHOT_TAP_TOGGLE
+#define ONESHOT_TAP_TOGGLE 2  // Tapping this number of times holds the key until tapped once again.
+#undef ONESHOT_TIMEOUT
+#define ONESHOT_TIMEOUT 2000
 
-// Prevent normal rollover on alphas from accidentally triggering mods.
-#define IGNORE_MOD_TAP_INTERRUPT
-
-// Enable rapid switch from tap to hold, disables double tap hold auto-repeat.
-#define TAPPING_FORCE_HOLD
-
-// https://getreuer.info/posts/keyboards/caps-word/index.html
-#define CAPS_WORD_IDLE_TIMEOUT 1000  // Turn off Caps Word after 1 second.
-
-// https://docs.qmk.fm/#/feature_mouse_keys
-#undef MOUSEKEY_DELAY
-#define MOUSEKEY_DELAY 50
-
-#undef MOUSEKEY_INTERVAL
-#define MOUSEKEY_INTERVAL 1  // 1000 Hz
-
-#undef MOUSEKEY_MOVE_DELTA
-#define MOUSEKEY_MOVE_DELTA 1
-
-#undef MOUSEKEY_MAX_SPEED
-#define MOUSEKEY_MAX_SPEED 100
-
-#undef MOUSEKEY_TIME_TO_MAX
-#define MOUSEKEY_TIME_TO_MAX 100
-
-#undef MOUSEKEY_WHEEL_DELAY
-#define MOUSEKEY_WHEEL_DELAY 100
-
-#undef MOUSEKEY_WHEEL_INTERVAL
-#define MOUSEKEY_WHEEL_INTERVAL 1  // 1000 Hz
-
-#undef MOUSEKEY_WHEEL_MAX_SPEED
-#define MOUSEKEY_WHEEL_MAX_SPEED 5
-
-#undef MOUSEKEY_WHEEL_TIME_TO_MAX
-#define MOUSEKEY_WHEEL_TIME_TO_MAX 100
+// https://docs.qmk.fm/#/feature_caps_word
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+#undef CAPS_WORD_IDLE_TIMEOUT
+#define CAPS_WORD_IDLE_TIMEOUT 2000
 
 #define LAYOUT_blaxpy(\
     K00, K01, K02, K03, K04, K05, K06,     K07, K08, K09, K10, K11, K12, K13,\
